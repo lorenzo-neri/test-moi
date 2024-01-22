@@ -9,8 +9,12 @@ class CSVFile extends Model
 {
     use HasFactory;
 
+    // altrimenti di default prende c_s_v_files
+    protected $table = 'csv_files';
+
     protected $fillable = [
         'orderDate',
+        'invoiceNumber',
         'customerName',
         'productID',
         'productName',

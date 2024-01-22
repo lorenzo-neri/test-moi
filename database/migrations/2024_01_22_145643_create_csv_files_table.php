@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->timestamp('orderDate')->nullable();
+            $table->integer('invoiceNumber');
             $table->string('customerName');
             $table->integer('productID');
             $table->string('productName');

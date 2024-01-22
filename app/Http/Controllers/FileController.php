@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CSVFile;
+use Carbon\Carbon;
+use DateTime;
 
 class FileController extends Controller
 {
@@ -57,9 +59,17 @@ class FileController extends Controller
             // Inizializza un array per contenere i dati del CSV
             $csvData = [];
 
+            $counter = 0;
             // Leggi ogni riga del CSV
             while (($row = fgetcsv($handle)) !== false) {
                 $csvData[] = $row;
+
+                $counter++;
+
+                // Interrompi il loop dopo 20 righe
+                if ($counter >= 20) {
+                    break;
+                }
             }
 
             // Chiudi il file
@@ -67,11 +77,27 @@ class FileController extends Controller
 
             // Elabora e inserisci i dati nel database
             foreach ($csvData as $row) {
-                // Fai qualcosa con ogni riga, ad esempio inserisci nel database
-                // $row è un array con i valori della riga corrente
-                // ...
+                #dd($row);
+                $format = 'Y-m-d';
 
-                // Esempio: CSVFile::create(['campo1' => $row[0], 'campo2' => $row[1], ...]);
+                // Verifica se la data nel CSV è valida
+                if (DateTime::createFromFormat($format, $row[0]) !== false) {
+
+                    CSVFile::create([
+                        'orderDate' => Carbon::createFromFormat($format, $row[0])->toDateTimeString(),
+                        'invoiceNumber' => $row[1],
+                        'customerName' => $row[2],
+                        'productID' => $row[3],
+                        'productName' => $row[4],
+                        'category' => $row[5],
+                        'quantityBought' => $row[6],
+                        'sellingPrice' => $row[7], #
+                        'unitCost' => $row[8], #
+                        'InvoiceSales' => $row[9], #
+                        'InvoiceCost' => $row[10], #
+                        'shipmentDate' => $row[11],
+                    ]);
+                }
             }
 
             return redirect()->back()->with('success', 'File caricato con successo!');
