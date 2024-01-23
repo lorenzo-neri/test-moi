@@ -11,11 +11,11 @@
                     <div class="card-header">{{ __('User Dashboard') }}</div>
 
                     <div class="card-body">
-                        @if (session('status'))
+                        {{-- @if (session('status'))
                             <div class="alert alert-success" role="alert">
                                 {{ session('status') }}
                             </div>
-                        @endif
+                        @endif --}}
 
                         {{ __('You are logged in!') }}
                     </div>
@@ -23,6 +23,13 @@
             </div>
             <div class="row py-5">
                 <div class="col">
+
+                    @if (session('status'))
+                        <div class="alert alert-success" role="alert">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+
                     <div class="card">
 
                         <form action="/upload" method="post" enctype="multipart/form-data">

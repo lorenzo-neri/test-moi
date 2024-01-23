@@ -16,6 +16,9 @@ return new class extends Migration
 
             $table->timestamp('orderDate')->nullable();
             $table->integer('invoiceNumber');
+
+            $table->integer('customerID')->nullable(); #file150k :(
+
             $table->string('customerName');
             $table->integer('productID');
             $table->string('productName');

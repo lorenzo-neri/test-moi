@@ -15,6 +15,9 @@ class CSVFile extends Model
     protected $fillable = [
         'orderDate',
         'invoiceNumber',
+
+        'customerID',
+
         'customerName',
         'productID',
         'productName',

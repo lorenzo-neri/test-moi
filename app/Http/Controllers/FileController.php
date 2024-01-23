@@ -12,26 +12,23 @@ class FileController extends Controller
 
     public function upload(Request $request)
     {
-        //Validazione del file
-        /* $request->validate([
-            'file' => 'required|file|mimes:txt,csv,xlsx',
-        ]);
 
-
-        //ottengo il file dalla richiesta
-        $file = $request->file('file');
-
-        //generaro un nome univoco per il file
-        $fileName = time() . '_' . $file->getClientOriginalName();
-
-        //salvo il file nella directory di archiviazione (default: storage/app/public/uploads)
-        $file->storeAs('uploads', $fileName, 'public');
-
-
-        // Elaborazione del CSV
-
-
-        return redirect()->back()->with('success', 'File caricato con successo!'); */
+        // MAPPATURA della TABELLA
+        $columnMapping = [
+            'orderDate' => 0,
+            'invoiceNumber' => 1,
+            'customerID' => 2,
+            'customerName' => 3,
+            'productID' => 4,
+            'productName' => 5,
+            'category' => 6,
+            'quantityBought' => 7,
+            'sellingPrice' => 8,
+            'unitCost' => 9,
+            'InvoiceSales' => 10,
+            'InvoiceCost' => 11,
+            'shipmentDate' => 12,
+        ];
 
 
         try {
@@ -56,17 +53,24 @@ class FileController extends Controller
             // Apri il file in modalità lettura
             $handle = fopen($filePath, 'r');
 
-            // Inizializza un array per contenere i dati del CSV
+            // Inizializa un array per contenere i dati del CSV
             $csvData = [];
 
             $counter = 0;
             // Leggi ogni riga del CSV
             while (($row = fgetcsv($handle)) !== false) {
-                $csvData[] = $row;
+                $rowData = [];
+
+                //mapp dati in base alle colonne corrispondenti
+                foreach ($columnMapping as $columnName => $columnIndex) {
+                    $rowData[$columnName] = isset($row[$columnIndex]) ? $row[$columnIndex] : null;
+                }
+
+                $csvData[] = $rowData;
 
                 $counter++;
 
-                // Interrompi il loop dopo 20 righe
+                // Interrompi while dopo 20 righe
                 if ($counter >= 20) {
                     break;
                 }
@@ -81,26 +85,33 @@ class FileController extends Controller
                 $format = 'Y-m-d';
 
                 //verifico se la data nel CSV è valida
-                if (DateTime::createFromFormat($format, $row[0]) !== false) {
+                if (DateTime::createFromFormat($format, $row['orderDate']) !== false) {
+
+                    //aggiungo la gestione dinamica di customerID
+                    $customerID = isset($row['customerID']) ? $row['customerID'] : null;
+
 
                     CSVFile::create([
-                        'orderDate' => Carbon::createFromFormat($format, $row[0])->toDateTimeString(),
-                        'invoiceNumber' => $row[1],
-                        'customerName' => $row[2],
-                        'productID' => $row[3],
-                        'productName' => $row[4],
-                        'category' => $row[5],
-                        'quantityBought' => $row[6],
-                        'sellingPrice' => str_replace(',', '.', $row[7]), #
-                        'unitCost' => $row[8], #
-                        'InvoiceSales' => str_replace(',', '.', $row[9]), #
-                        'InvoiceCost' => str_replace(',', '.', $row[10]), #
-                        'shipmentDate' => $row[11],
+                        'orderDate' => Carbon::createFromFormat($format, $row['orderDate'])->toDateTimeString(),
+                        'invoiceNumber' => $row['invoiceNumber'],
+
+                        'customerID' => $customerID,
+
+                        'customerName' => $row['customerName'],
+                        'productID' => $row['productID'],
+                        'productName' => $row['productName'],
+                        'category' => $row['category'],
+                        'quantityBought' => $row['quantityBought'],
+                        'sellingPrice' => str_replace(',', '.', $row['sellingPrice']), #
+                        'unitCost' => $row['unitCost'],
+                        'InvoiceSales' => str_replace(',', '.', $row['InvoiceSales']), #
+                        'InvoiceCost' => str_replace(',', '.', $row['InvoiceCost']), #
+                        'shipmentDate' => $row['shipmentDate'],
                     ]);
                 }
             }
 
-            return redirect()->back()->with('success', 'File caricato con successo!');
+            return redirect()->back()->with('status', 'File caricato con successo!☑️');
         } catch (\Exception $e) {
             // Visualizza i dettagli dell'eccezione per il debugging
             dd($e->getMessage(), $e->getCode(), $e->getTraceAsString());
