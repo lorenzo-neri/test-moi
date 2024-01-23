@@ -72,15 +72,15 @@ class FileController extends Controller
                 }
             }
 
-            // Chiudi il file
+            // Chiudi file
             fclose($handle);
 
-            // Elabora e inserisci i dati nel database
+            // elaboro e inserisco i dati nel database
             foreach ($csvData as $row) {
                 #dd($row);
                 $format = 'Y-m-d';
 
-                // Verifica se la data nel CSV è valida
+                //verifico se la data nel CSV è valida
                 if (DateTime::createFromFormat($format, $row[0]) !== false) {
 
                     CSVFile::create([
@@ -91,10 +91,10 @@ class FileController extends Controller
                         'productName' => $row[4],
                         'category' => $row[5],
                         'quantityBought' => $row[6],
-                        'sellingPrice' => $row[7], #
+                        'sellingPrice' => str_replace(',', '.', $row[7]), #
                         'unitCost' => $row[8], #
-                        'InvoiceSales' => $row[9], #
-                        'InvoiceCost' => $row[10], #
+                        'InvoiceSales' => str_replace(',', '.', $row[9]), #
+                        'InvoiceCost' => str_replace(',', '.', $row[10]), #
                         'shipmentDate' => $row[11],
                     ]);
                 }
