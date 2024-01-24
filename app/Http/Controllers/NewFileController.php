@@ -57,37 +57,10 @@ class NewFileController extends Controller
             // Chiudi file
             fclose($handle);
 
+            $headers = $csvData[0];
 
-            ###
-            // Inizializzo il contenuto HTML per la tabella
-            $tableHtml = '<div class=""><table class="table table-bordered"><thead><tr>';
 
-            # if (!empty($csvData)) {
-            $headers = array_shift($csvData);
-
-            // Aggiungo gli header alla tabella
-            foreach ($headers as $header) {
-                $tableHtml .= '<th>' . $header . '</th>';
-            }
-            # }
-
-            $tableHtml .= '</tr></thead><tbody>';
-
-            // Itera su ogni riga dei dati CSV
-            foreach ($csvData as $rowData) {
-                $tableHtml .= '<tr>';
-
-                // Itera su ogni cella della riga
-                foreach ($rowData as $cellData) {
-                    $tableHtml .= '<td>' . $cellData . '</td>';
-                }
-
-                $tableHtml .= '</tr>';
-            }
-
-            $tableHtml .= '</tbody></table></div>';
-
-            return view('tablePage', ['tableHtml' => $tableHtml])
+            return view('tablePage', ['csvData' => $csvData, 'headers' => $headers])
                 ->with('status', 'File caricato con successo!☑️');
         } catch (\Exception $e) {
             dd($e->getMessage(), $e->getCode(), $e->getTraceAsString());
