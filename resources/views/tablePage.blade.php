@@ -10,11 +10,11 @@
 
         {{-- @if (!empty($csvData)) --}}
 
-        <form {{-- action="{{ route('salva_dati') }}" --}} method="post">
+        {{-- <form action="{{ route('user_choice') }}" method="post">
             @csrf
             <div class="p-5">
                 @for ($i = 0; $i < count($headers); $i++)
-                    {{-- <label for="colonna{{ $i + 1 }}">Seleziona Colonna {{ $i + 1 }}:</label> --}}
+                    
                     <select name="colonna{{ $i + 1 }}" id="colonna{{ $i + 1 }}" class="">
                         @foreach ($headers as $header)
                             <option value="{{ $header }}">{{ $header }}</option>
@@ -25,28 +25,42 @@
 
 
             <button type="submit" class=" mb-3 btn btn-primary">Invia al Database</button>
+        </form> --}}
+        <form action="{{ route('user_choice') }}" method="post">
+            @csrf
+            <div class="p-5">
+                @for ($i = 0; $i < count($headers); $i++)
+                    <select name="selectedColumns[]" class="">
+                        @foreach ($headers as $header)
+                            <option value="{{ $header }}">{{ $header }}</option>
+                        @endforeach
+                    </select>
+                @endfor
+            </div>
 
-            <table class="table table-bordered">
-                <thead>
+            <button type="submit" class=" mb-3 btn btn-primary">Invia al Database</button>
+        </form>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    @foreach ($csvData[0] as $header)
+                        <th>{{ $header }}</th>
+                    @endforeach
+                </tr>
+            </thead>
+            <tbody>
+                @for ($i = 1; $i < min(11, count($csvData)); $i++)
                     <tr>
-                        @foreach ($csvData[0] as $header)
-                            <th>{{ $header }}</th>
+                        @foreach ($csvData[$i] as $cellData)
+                            <td>{{ $cellData }}</td>
                         @endforeach
                     </tr>
-                </thead>
-                <tbody>
-                    @for ($i = 1; $i < min(11, count($csvData)); $i++)
-                        <tr>
-                            @foreach ($csvData[$i] as $cellData)
-                                <td>{{ $cellData }}</td>
-                            @endforeach
-                        </tr>
-                    @endfor
-                </tbody>
-            </table>
+                @endfor
+            </tbody>
+        </table>
 
 
-        </form>
         {{--  @endif --}}
     </div>
 @endsection

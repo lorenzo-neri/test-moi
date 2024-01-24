@@ -30,5 +30,6 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::post('/upload', [NewFileController::class, 'upload']);
+Route::post('/user-choice', [NewFileController::class, 'userChoice'])->name('user_choice');
 
 require __DIR__ . '/auth.php';
