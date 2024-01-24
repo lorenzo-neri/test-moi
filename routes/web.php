@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\NewFileController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -28,6 +29,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::post('/upload', [FileController::class, 'upload']);
+Route::post('/upload', [NewFileController::class, 'upload']);
 
 require __DIR__ . '/auth.php';
