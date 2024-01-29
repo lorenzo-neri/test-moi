@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('csv_files', function (Blueprint $table) {
+        /* Schema::create('csv_files', function (Blueprint $table) {
             $table->id();
 
             $table->timestamp('orderDate')->nullable();
@@ -29,6 +29,27 @@ return new class extends Migration
             $table->decimal('InvoiceSales', 8, 2);
             $table->decimal('InvoiceCost', 8, 2);
             $table->timestamp('shipmentDate')->nullable();
+
+            $table->timestamps();
+        }); */
+        Schema::create('csv_files', function (Blueprint $table) {
+            $table->id();
+
+            $table->string('orderDate')->nullable();
+            $table->string('invoiceNumber')->nullable();
+
+            $table->string('customerID')->nullable(); #file150k :(
+
+            $table->string('customerName')->nullable();
+            $table->string('productID')->nullable();
+            $table->string('productName')->nullable();
+            $table->string('category')->nullable();
+            $table->string('quantityBought')->nullable();
+            $table->string('sellingPrice')->nullable();
+            $table->string('unitCost')->nullable();
+            $table->string('InvoiceSales')->nullable();
+            $table->string('InvoiceCost')->nullable();
+            $table->string('shipmentDate')->nullable();
 
             $table->timestamps();
         });

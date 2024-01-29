@@ -59,11 +59,43 @@ class NewFileController extends Controller
 
             $headers = $csvData[0];
 
+            #test
+            $request->session()->put('csvData', $csvData);
+            #test
 
-            return view('tablePage', ['csvData' => $csvData, 'headers' => $headers])
+            return view('tablePage', compact('csvData', 'headers'))
                 ->with('status', 'File caricato con successo!☑️');
         } catch (\Exception $e) {
             dd($e->getMessage(), $e->getCode(), $e->getTraceAsString());
         }
+    }
+
+    public function salvaDati(Request $request)
+    {
+
+        $selectValues = $request->json('selectValues');
+        #dd($selectValues);
+        // Recupera i dati dalla sessione
+        $csvData = $request->session()->get('csvData');
+        #dd($csvData);
+        // Crea un nuovo record utilizzando il modello CSVFile
+        $nuovoRecord = new CSVFile;
+        #dd($nuovoRecord);
+        // Assegna i valori ai campi del record utilizzando i nomi delle colonne
+        foreach ($selectValues as $index => $colonna) {
+            // Verifica se la colonna è presente nell'array degli header selezionati dall'utente
+            if (in_array($colonna, $selectValues)) {
+                // Ottieni l'indice della colonna nell'array originale dei dati
+                $colIndex = array_search($colonna, $selectValues);
+                // Utilizza il valore corrispondente nella riga corrente del CSVData
+                $nuovoRecord->{$colonna} = $csvData[0][$colIndex];
+            }
+        }
+        dd($nuovoRecord);
+
+        // Salva il record nel database
+        $nuovoRecord->save();
+
+        return response()->json(['message' => 'Dati salvati con successo'], 200);
     }
 }

@@ -31,4 +31,6 @@ Route::middleware('auth')->group(function () {
 
 Route::post('/upload', [NewFileController::class, 'upload']);
 
+Route::post('/salva_dati', [NewFileController::class, 'salvaDati'])->name('salva_dati');
+
 require __DIR__ . '/auth.php';
