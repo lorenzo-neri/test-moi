@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CSVFile;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use DateTime;
 
@@ -30,6 +31,9 @@ class NewFileController extends Controller
             // Leggi il file CSV
             $filePath = storage_path('app/public/uploads/' . $fileName);
 
+            // Salvo il percorso da file perché dovrò rileggerlo
+            $request->session()->put('filePath', $filePath);
+
             // Apri il file in modalità lettura
             $handle = fopen($filePath, 'r');
 
@@ -40,7 +44,7 @@ class NewFileController extends Controller
 
             // Leggi ogni riga del CSV
             while (($row = fgetcsv($handle)) !== false) {
-                $rowData = [];
+                //$rowData = [];
 
                 $csvData[] = $row;
 
@@ -51,7 +55,7 @@ class NewFileController extends Controller
                     break;
                 }
             }
-
+            // dd($row);
             # dd($handle, $csvData, $row);
 
             // Chiudi file
@@ -76,50 +80,68 @@ class NewFileController extends Controller
 
     public function salvaDati(Request $request)
     {
-
+        // scelte dell'utente
         $selectValues = $request->json('selectValues');
-        dd($selectValues);
-        // Recupera i dati dalla sessione
-        $csvData = $request->session()->get('csvData');
-        #dd($csvData);
-        // Crea un nuovo record utilizzando il modello CSVFile
-        $nuovoRecord = new CSVFile;
-        #dd($nuovoRecord);
-        // Assegna i valori ai campi del record utilizzando i nomi delle colonne
-        foreach ($selectValues as $index => $colonna) {
-            // Verifica se la colonna è presente nell'array degli header selezionati dall'utente
-            if (in_array($colonna, $selectValues)) {
-                // Ottieni l'indice della colonna nell'array originale dei dati
-                $colIndex = array_search($colonna, $selectValues);
-                // Utilizza il valore corrispondente nella riga corrente del CSVData
-                $nuovoRecord->{$colonna} = $csvData[0][$colIndex];
-            }
+        #dd($selectValues);
+
+        $filePath = $request->session()->get('filePath');
+        #dd($filePath);
+
+        $handle = fopen($filePath, 'r'); //modalità lettura
+        $csvData = []; //inizializza array
+        $counter = 0;
+        // Leggi ogni riga del CSV
+        while (($row = fgetcsv($handle)) !== false) {
+            $csvData[] = $row;
+            $counter++;
+
+            // Interrompi while dopo 10 righe
+            /* if ($counter >= 1000) {
+                break;
+            } */
         }
-        dd($nuovoRecord);
+        fclose($handle); //Chiudi file
+        //dd($csvData);
 
-        // Salva il record nel database
-        $nuovoRecord->save();
-
-        return response()->json(['message' => 'Dati salvati con successo'], 200);
-    }
-    /* public function salvaDati(Request $request)
-    {
-        $selectValues = $request->json('selectValues');
-        $csvData = $request->session()->get('csvData');
+        $dataToInsert = [];
 
         foreach ($csvData as $rowData) {
-            $nuovoRecord = new CSVFile;
+            $record = [];
 
             foreach ($selectValues as $index => $colonna) {
-                if (isset($rowData[$index])) { // verifica che l'indice esista nel CSV
-                    $nuovoRecord->{$colonna} = $rowData[$index];
+                if ($colonna !== '0' && isset($rowData[$index])) {
+                    $record[$colonna] = $rowData[$index];
                 }
             }
 
-            $nuovoRecord->save();
+            $dataToInsert[] = $record;
+        }
+
+        $chunks = array_chunk($dataToInsert, 1000);
+
+        //Inserimento a blocchi nel database usando query SQL dirette
+        foreach ($chunks as $chunk) {
+            DB::table('csv_files')->insert($chunk);
         }
 
         return response()->json(['message' => 'Dati salvati con successo'], 200);
     }
- */
 }
+
+/* foreach ($chunks as $chunk) {
+    $values = [];
+
+    //Ottengo l'elenco delle colonne per il blocco corrente
+    $columns = array_keys($chunk[0]);
+
+    foreach ($chunk as $record) {
+        $values[] = '(' . implode(', ', array_map(fn ($value) => "'" . addslashes($value) . "'", $record)) . ')';
+    }
+
+    $columnsString = implode(', ', $columns);
+    $valuesString = implode(', ', $values);
+
+    $query = "INSERT INTO csv_files ($columnsString) VALUES $valuesString";
+
+    DB::statement($query);
+} */

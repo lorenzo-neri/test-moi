@@ -9,6 +9,7 @@
             <div class="p-5">
                 @for ($i = 0; $i < count($columns); $i++)
                     <select name="colonna{{ $i + 1 }}" id="colonna{{ $i + 1 }}" class="">
+                        <option value="0">Scegli un campo</option>
                         @foreach ($columns as $column)
                             <option value="{{ $column }}">{{ $column }}</option>
                         @endforeach
