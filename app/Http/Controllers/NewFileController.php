@@ -78,7 +78,7 @@ class NewFileController extends Controller
     {
 
         $selectValues = $request->json('selectValues');
-        #dd($selectValues);
+        dd($selectValues);
         // Recupera i dati dalla sessione
         $csvData = $request->session()->get('csvData');
         #dd($csvData);

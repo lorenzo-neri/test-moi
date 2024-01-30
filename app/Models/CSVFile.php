@@ -17,7 +17,7 @@ class CSVFile extends Model
         'numero_fattura',
         'id_cliente',
         'nome_cliente',
-        'producid_prodottotID',
+        'id_prodotto',
         'nome_prodotto',
         'categoria',
         'quantità_acquistata',
