@@ -2,22 +2,15 @@
 
 @section('content')
     <div class="">
-        {{--  @if (session('status'))
-            <div class="alert alert-success">
-                {{ session('status') }}
-            </div>
-            @endif --}}
 
-        {{-- @if (!empty($csvData)) --}}
-
+        {{-- SELECT & BUTTON --}}
         <form {{-- action="{{ route('salva_dati') }}" method="post" --}} id="uploadForm" enctype="multipart/form-data">
             @csrf
             <div class="p-5">
-                @for ($i = 0; $i < count($headers); $i++)
-                    {{-- <label for="colonna{{ $i + 1 }}">Seleziona Colonna {{ $i + 1 }}:</label> --}}
+                @for ($i = 0; $i < count($columns); $i++)
                     <select name="colonna{{ $i + 1 }}" id="colonna{{ $i + 1 }}" class="">
-                        @foreach ($headers as $header)
-                            <option value="{{ $header }}">{{ $header }}</option>
+                        @foreach ($columns as $column)
+                            <option value="{{ $column }}">{{ $column }}</option>
                         @endforeach
                     </select>
                 @endfor
@@ -25,11 +18,9 @@
 
             <button onclick="inviaAlDatabase()" type="button" class=" mb-3 btn btn-primary">Invia al Database</button>
         </form>
+        {{-- /SELECT & BUTTON --}}
 
-
-
-
-
+        {{-- TABLE --}}
         <table class="table table-bordered table-responsive ">
             <thead>
                 <tr>
@@ -48,38 +39,41 @@
                 @endfor
             </tbody>
         </table>
+        {{-- /TABLE --}}
 
-
-        {{--  @endif --}}
     </div>
 
 
     <script>
         function inviaAlDatabase() {
             const selectValues = [];
+            const dataValues = {};
 
             // Itera su tutti gli elementi di select nel form
             const selects = document.querySelectorAll('select');
             selects.forEach(function(select) {
-                selectValues.push(select.value);
+                const columnName = select.value;
+                selectValues.push(columnName);
+                const columnIndex = headers.indexOf(columnName);
+                dataValues[columnName] = csvData[1][columnIndex]; // Assuming data is in the second row
             });
 
-            // Ora 'selectValues' contiene i valori selezionati di tutti gli elementi di select
-            console.log('prima di axios', selectValues);
+            // Ora 'selectValues' contiene i nomi delle colonne selezionate
+            // 'dataValues' contiene i dati corrispondenti a tali colonne
+            console.log('selectValues', selectValues);
+            console.log('dataValues', dataValues);
 
             // Invia i dati al controller tramite Axios
             axios.post('/salva_dati', {
-                    selectValues
+                    selectValues,
+                    dataValues
                 })
                 .then(response => {
                     console.log('Dati inviati con successo!');
-                    console.log(selectValues);
-
                 })
-            /* .catch(error => {
-                alert("Errore durante l'invio dei dati.");
-            }); */
-
+                .catch(error => {
+                    alert("Errore durante l'invio dei dati.");
+                });
         }
     </script>
 @endsection

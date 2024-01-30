@@ -59,11 +59,15 @@ class NewFileController extends Controller
 
             $headers = $csvData[0];
 
+            $columns = config('db_table_fields');
+
+            // dd($columns);
+
             #test
-            $request->session()->put('csvData', $csvData);
+            // $request->session()->put('csvData', $csvData);
             #test
 
-            return view('tablePage', compact('csvData', 'headers'))
+            return view('tablePage', compact('csvData', 'columns', 'headers'))
                 ->with('status', 'File caricato con successo!☑️');
         } catch (\Exception $e) {
             dd($e->getMessage(), $e->getCode(), $e->getTraceAsString());
@@ -98,4 +102,24 @@ class NewFileController extends Controller
 
         return response()->json(['message' => 'Dati salvati con successo'], 200);
     }
+    /* public function salvaDati(Request $request)
+    {
+        $selectValues = $request->json('selectValues');
+        $csvData = $request->session()->get('csvData');
+
+        foreach ($csvData as $rowData) {
+            $nuovoRecord = new CSVFile;
+
+            foreach ($selectValues as $index => $colonna) {
+                if (isset($rowData[$index])) { // verifica che l'indice esista nel CSV
+                    $nuovoRecord->{$colonna} = $rowData[$index];
+                }
+            }
+
+            $nuovoRecord->save();
+        }
+
+        return response()->json(['message' => 'Dati salvati con successo'], 200);
+    }
+ */
 }

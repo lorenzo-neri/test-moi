@@ -13,20 +13,18 @@ class CSVFile extends Model
     protected $table = 'csv_files';
 
     protected $fillable = [
-        'orderDate',
-        'invoiceNumber',
-
-        'customerID',
-
-        'customerName',
-        'productID',
-        'productName',
-        'category',
-        'quantityBought',
-        'sellingPrice',
-        'unitCost',
-        'InvoiceSales',
-        'InvoiceCost',
-        'shipmentDate',
+        'data_ordine',
+        'numero_fattura',
+        'id_cliente',
+        'nome_cliente',
+        'producid_prodottotID',
+        'nome_prodotto',
+        'categoria',
+        'quantità_acquistata',
+        'prezzo_di_vendita',
+        'costo_unità',
+        'fattura_vendite',
+        'fattura_costo',
+        'data_di_spedizione',
     ];
 }
