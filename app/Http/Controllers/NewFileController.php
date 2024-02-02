@@ -96,9 +96,9 @@ class NewFileController extends Controller
             $counter++;
 
             // Interrompi while dopo 10 righe
-            /* if ($counter >= 1000) {
+            if ($counter >= 10000) {
                 break;
-            } */
+            }
         }
         fclose($handle); //Chiudi file
         //dd($csvData);
@@ -119,7 +119,8 @@ class NewFileController extends Controller
 
         $chunks = array_chunk($dataToInsert, 1000);
 
-        //Inserimento a blocchi nel database usando query SQL dirette
+        // DB::insert('insert into csv_files' . $chunks);
+
         foreach ($chunks as $chunk) {
             DB::table('csv_files')->insert($chunk);
         }

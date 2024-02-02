@@ -17,7 +17,11 @@
                 @endfor
             </div>
 
-            <button onclick="inviaAlDatabase()" type="button" class=" mb-3 btn btn-primary">Invia al Database</button>
+            <button onclick="inviaAlDatabase()" type="button" class=" mb-3 btn btn-primary">
+                <a class="nav-link" href="{{ url('/') }}">{{ __('Home') }}
+                    Invia al Database
+                </a>
+            </button>
         </form>
         {{-- /SELECT & BUTTON --}}
 
